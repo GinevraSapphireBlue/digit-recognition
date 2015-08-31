@@ -50,9 +50,14 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="NeuralNetwork\Input.cs" />
-    <Compile Include="NeuralNetwork\IOutputable.cs" />
-    <Compile Include="NeuralNetwork\Neuron.cs" />
+    <Compile Include="NeuralNetwork\Layers\ILayerable.cs" />
+    <Compile Include="NeuralNetwork\Network.cs" />
+    <Compile Include="NeuralNetwork\Neurons\Input.cs" />
+    <Compile Include="NeuralNetwork\Layers\InputLayer.cs" />
+    <Compile Include="NeuralNetwork\Neurons\IOutputable.cs" />
+    <Compile Include="NeuralNetwork\Neurons\Neuron.cs" />
+    <Compile Include="NeuralNetwork\Layers\SigmoidNeuronLayer.cs" />
+    <Compile Include="NeuralNetwork\Neurons\SigmoidNeuron.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
