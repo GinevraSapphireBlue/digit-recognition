@@ -33,6 +33,10 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork
         {
             Consumers.AddRange(neurons);
         }
+        public void SetInputValue(int input)
+        {
+            InputValue = input;
+        }
 
         /* IOutputable implementation */
         public double GetOutput()
