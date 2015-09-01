@@ -21,13 +21,15 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork
             get { return layers; }
         }
 
-        public Network(int[] inputs, int numOfLayers, int numOfNeurons)
+        public Network(int numOfInputs, int numOfLayers, int numOfNeurons)
         {
-            LayerCount = numOfLayers;
+            /* numOfLayers - number of hidden layers;
+             * LayerCount - number of hidden layers + output layer */
+            LayerCount = numOfLayers + 1;
             Layers = new List<ILayerable>();
-            //Add input layer
-            Layers.Add(new InputLayer(inputs));
-            //Add neuron layers and link each to previous one
+            //Add input layer containing numOfInputs inputs, all set initially to 0
+            Layers.Add(new InputLayer(numOfInputs));
+            //Add neuron layers and link each layer to the previous one
             for (int i = 1; i < LayerCount; i++)
             {
                 Layers.Add(new SigmoidNeuronLayer(numOfNeurons));
@@ -35,9 +37,38 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork
             }
             //Add final (output) neuron layer - 10 neurons for 10 digits
             Layers.Add(new SigmoidNeuronLayer(10));
-            ((SigmoidNeuronLayer)Layers[layerCount]).LinkBackToLayer(Layers[layerCount - 1]);
+            ((SigmoidNeuronLayer)Layers[LayerCount]).LinkBackToLayer(Layers[LayerCount - 1]);
         }
 
         //TO DO - ADD LEARNING ELEMENTS TO NETWORK LEVEL
+        public void SetInputValues(int[] inputs)
+        {
+            ((InputLayer)Layers[0]).SetInputs(inputs);
+        }
+        public void FeedResultsForward()
+        {
+            /* Fire all neuron layers in order */
+            for (int i = 1; i <= LayerCount; i++)
+            {
+                ((SigmoidNeuronLayer)Layers[i]).FireAll();
+            }
+        }
+        public void PropagateErrorsBack(double learningCoef, int[] expectedValues)
+        {
+            /* Calculate errors and new weights for output layer */
+            ((SigmoidNeuronLayer)Layers[LayerCount]).UpdateAllWeights(learningCoef, expectedValues);
+            /* Calculate errors and new weights for hidden layers, from last to first */
+            for (int i = LayerCount - 1; i >= 0; i--)
+            {
+                ((SigmoidNeuronLayer)Layers[i]).UpdateAllWeights(learningCoef);
+            }
+        }
+        public void ResetAll()
+        {
+            for (int i = 1; i <= LayerCount; i++)
+            {
+                ((SigmoidNeuronLayer)Layers[i]).ResetAll();
+            }
+        }
     }
 }
