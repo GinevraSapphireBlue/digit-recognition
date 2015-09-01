@@ -40,6 +40,13 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork
             set { fired = value; }
         }
 
+        private int expectedValue;
+        protected int ExpectedValue
+        {
+            get { return expectedValue; }
+            set { expectedValue = value; }
+        }
+
         private double output;
         public double Output
         {
@@ -65,7 +72,7 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork
             get
             {
                 if (!errorCalculated)
-                    CalculateErrorCoef();
+                    CalculateErrorCoef(ExpectedValue);
                 return errorCoef;
             }
         }
@@ -84,11 +91,10 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork
         /* CONSTRUCTOR STUB */
         public Neuron()
         {
-            // TO DO - initialize bias with small random value, no inputs or consumers yet - have to be added later
-            // initialize bools to false
             Bias = 0;
             Inputs = new Dictionary<IOutputable, double>();
             Consumers = new List<IOutputable>();
+            ExpectedValue = -1;
             Fired = false;
             ErrorCalculated = false;
         }
@@ -127,8 +133,9 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork
             Fired = true;
         }
 
-        public void UpdateWeights(double learningCoef)
+        public void UpdateWeights(double learningCoef, int expected = -1)
         {
+            ExpectedValue = expected;
             foreach (IOutputable input in Inputs.Keys)
             {
                 Inputs[input] *= 1.00 + learningCoef * ErrorCoef;
@@ -165,12 +172,12 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork
         {
             return Inputs[input];
         }
-        protected void CalculateErrorCoef(int expectedValue = -1)
+        protected void CalculateErrorCoef(int expected = -1)
         {
             double totalWeight = SumWeights();
             double difference;
 
-            if (expectedValue == -1) /* Valid for hidden layers' neurons */
+            if (expected == -1) /* Valid for hidden layers' neurons */
             {
                 double totalErrorFromUp = 0;
                 foreach (Neuron n in Consumers)
@@ -181,7 +188,7 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork
             }
             else /* Valid for output layer neurons */
             {
-                difference = expectedValue - Output;
+                difference = expected - Output;
             }
 
             ErrorCoef = DerivativeOfActivationFunction(totalWeight) * difference;

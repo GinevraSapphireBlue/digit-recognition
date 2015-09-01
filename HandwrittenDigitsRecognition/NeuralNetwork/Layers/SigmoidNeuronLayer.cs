@@ -59,11 +59,21 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork
                 n.Reset();
             }
         }
-        public void UpdateAllWeights(double learningCoef)
+        public void UpdateAllWeights(double learningCoef, int[] expectedValues = null)
         {
-            foreach (Neuron n in Neurons)
+            if (expectedValues != null) /* Output layer */
             {
-                n.UpdateWeights(learningCoef);
+                for (int i = 0; i < Neurons.Count; i++)
+                {
+                    Neurons[i].UpdateWeights(learningCoef, expectedValues[i]);
+                }
+            }
+            else /* Hidden layer */
+            {
+                for (int i = 0; i < Neurons.Count; i++)
+                {
+                    Neurons[i].UpdateWeights(learningCoef);
+                }
             }
         }
     }
