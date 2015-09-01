@@ -18,10 +18,14 @@ namespace HandwrittenDigitsRecognition.Application
         private string fileLocation;
         public string FileLocation { get; set; }
 
-        public NetworkTesting(Network testNetwork, string file)
+        private double learningCoef;
+        public double LearningCoef { get; set; }
+
+        public NetworkTesting(Network testNetwork, string file, double learnCoef)
         {
             DigitNetwork = testNetwork;
             FileLocation = file;
+            LearningCoef = learnCoef;
         }
     }
 }

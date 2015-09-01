@@ -14,6 +14,7 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork
             set { layerCount = value; }
             get { return layerCount; }
         }
+
         private List<ILayerable> layers;
         public List<ILayerable> Layers
         {
@@ -21,14 +22,18 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork
             get { return layers; }
         }
 
+        private int inputSize;
+        public int InputSize { get; protected set; }
+
         public Network(int numOfInputs, int numOfLayers, int numOfNeurons)
         {
+            InputSize = numOfInputs;
             /* numOfLayers - number of hidden layers;
              * LayerCount - number of hidden layers + output layer */
             LayerCount = numOfLayers + 1;
             Layers = new List<ILayerable>();
             //Add input layer containing numOfInputs inputs, all set initially to 0
-            Layers.Add(new InputLayer(numOfInputs));
+            Layers.Add(new InputLayer(InputSize));
             //Add neuron layers and link each layer to the previous one
             for (int i = 1; i < LayerCount; i++)
             {
@@ -40,7 +45,7 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork
             ((SigmoidNeuronLayer)Layers[LayerCount]).LinkBackToLayer(Layers[LayerCount - 1]);
         }
 
-        //TO DO - ADD LEARNING ELEMENTS TO NETWORK LEVEL
+        /* LEARNING ELEMENTS */
         public void SetInputValues(int[] inputs)
         {
             ((InputLayer)Layers[0]).SetInputs(inputs);
