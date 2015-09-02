@@ -21,22 +21,21 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork.Neurons
             get { return consumers; }
         }
 
-        public Input(int input){
+        public Input(int input) : base(){
             InputValue = input;
             Consumers = new List<Neuron>();
         }
 
-        public void AddConsumers(List<Neuron> neurons)
+        public override void AddConsumers(List<Neuron> consumers)
         {
-            Consumers.AddRange(neurons);
+            Consumers.AddRange(consumers);
         }
         public void SetInputValue(int input)
         {
             InputValue = input;
         }
 
-        /* IOutputable implementation */
-        public double GetOutput()
+        public override double GetOutput()
         {
             return (double)InputValue;
         }

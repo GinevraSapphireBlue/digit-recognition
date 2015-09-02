@@ -112,13 +112,13 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork.Neurons
         {
             Consumers.Add(neuron);
         }
-        public void AddConsumers(List<Neuron> neurons)
+        public override void AddConsumers(List<Neuron> neurons)
         {
             Consumers.AddRange(neurons);
         }
 
         /* IOutputable implementation */
-        public double GetOutput()
+        public override double GetOutput()
         {
             return Output;
         }

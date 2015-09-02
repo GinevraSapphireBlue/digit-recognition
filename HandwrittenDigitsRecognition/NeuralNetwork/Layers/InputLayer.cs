@@ -31,9 +31,11 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork.Layers
             }
         }
 
-        public List<Node> GetElements()
+        public override List<Node> GetElements()
         {
-            return Inputs;
+            List<Node> elements = new List<Node>();
+            elements.AddRange(Inputs);
+            return elements;
         }
     }
 }

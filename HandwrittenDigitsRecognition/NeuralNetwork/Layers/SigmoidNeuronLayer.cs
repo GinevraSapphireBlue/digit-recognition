@@ -5,8 +5,8 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork.Layers
 {
     class SigmoidNeuronLayer : Layer
     {
-        private List<Node> neurons;
-        public List<Node> Neurons
+        private List<Neuron> neurons;
+        public List<Neuron> Neurons
         {
             set { neurons = value; }
             get { return neurons; }
@@ -75,9 +75,11 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork.Layers
                 n.UpdateWeights(learningCoef);
             }
         }
-        public List<Node> GetElements()
+        public override List<Node> GetElements()
         {
-            return Neurons;
+            List<Node> elements = new List<Node>();
+            elements.AddRange(Neurons);
+            return elements;
         }
     }
 }
