@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HandwrittenDigitsRecognition.NeuralNetwork
 {
@@ -72,7 +68,7 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork
             get
             {
                 if (!errorCalculated)
-                    CalculateErrorCoef(ExpectedValue);
+                    CalculateErrorCoef();
                 return errorCoef;
             }
         }
@@ -91,7 +87,7 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork
         /* CONSTRUCTOR STUB */
         public Neuron()
         {
-            Bias = 0;
+            Bias = Rand.NextDouble()/4;
             Inputs = new Dictionary<IOutputable, double>();
             Consumers = new List<IOutputable>();
             ExpectedValue = -1;
@@ -102,7 +98,7 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork
         /* SETTING INPUTS AND CONSUMERS */
         public void AddInput(IOutputable input)
         {
-            Inputs.Add(input, Rand.NextDouble());
+            Inputs.Add(input, Rand.NextDouble()/4);
         }
         public void AddInputs(ICollection<IOutputable> newInputs)
         {
@@ -138,9 +134,9 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork
             ExpectedValue = expected;
             foreach (IOutputable input in Inputs.Keys)
             {
-                Inputs[input] *= 1.00 + learningCoef * ErrorCoef;
+                Inputs[input] += learningCoef * ErrorCoef * input.GetOutput();
             }
-            Bias *= 1.00 + learningCoef * ErrorCoef;
+            Bias += learningCoef * ErrorCoef * Bias;
         }
 
         /* Setting neuron to not yet fired */
@@ -161,37 +157,35 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork
             weightedInput += Bias;
             return weightedInput;
         }
-        protected double SumWeights()
+        protected double SumWeightedInputs()
         {
             double sum = 0;
             foreach (Neuron n in inputs.Keys)
-                sum += inputs[n];
+                sum += inputs[n] * n.Output;
             return sum;
         }
         protected double GetWeight(IOutputable input)
         {
             return Inputs[input];
         }
-        protected void CalculateErrorCoef(int expected = -1)
+        protected void CalculateErrorCoef()
         {
-            double totalWeight = SumWeights();
-            double difference;
+            double totalWeight = SumWeightedInputs();
 
-            if (expected == -1) /* Valid for hidden layers' neurons */
+            if (ExpectedValue == -1) /* Valid for hidden layers' neurons */
             {
-                double totalErrorFromUp = 0;
+                double totalWeightedErrorFromUp = 0;
                 foreach (Neuron n in Consumers)
                 {
-                    totalErrorFromUp += n.ErrorCoef * n.GetWeight(this);
+                    totalWeightedErrorFromUp += n.GetWeight(this) * n.ErrorCoef;
                 }
-                difference = totalErrorFromUp;
+                ErrorCoef = DerivativeOfActivationFunction(totalWeight) * totalWeightedErrorFromUp;
             }
             else /* Valid for output layer neurons */
             {
-                difference = expected - Output;
+                ErrorCoef = DerivativeOfActivationFunction(totalWeight) * (ExpectedValue - Output);
             }
 
-            ErrorCoef = DerivativeOfActivationFunction(totalWeight) * difference;
             ErrorCalculated = true;
         }
 
