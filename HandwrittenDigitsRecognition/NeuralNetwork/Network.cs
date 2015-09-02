@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using HandwrittenDigitsRecognition.NeuralNetwork.Layers;
+using System.Collections.Generic;
 
 namespace HandwrittenDigitsRecognition.NeuralNetwork
 {
@@ -11,8 +12,8 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork
             get { return layerCount; }
         }
 
-        private List<ILayerable> layers;
-        public List<ILayerable> Layers
+        private List<Layer> layers;
+        public List<Layer> Layers
         {
             set { layers = value; }
             get { return layers; }
@@ -32,7 +33,7 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork
             /* numOfLayers - number of hidden layers;
              * LayerCount - number of hidden layers + output layer */
             LayerCount = numOfLayers + 1;
-            Layers = new List<ILayerable>();
+            Layers = new List<Layer>();
             //Add input layer containing numOfInputs inputs, all set initially to 0
             Layers.Add(new InputLayer(InputSize));
             //Add neuron layers and link each layer to the previous one

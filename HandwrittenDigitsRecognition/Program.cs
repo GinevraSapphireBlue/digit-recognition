@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using HandwrittenDigitsRecognition.NeuralNetwork;
+using HandwrittenDigitsRecognition.NeuronApp;
 
 namespace HandwrittenDigitsRecognition
 {
@@ -17,6 +19,7 @@ namespace HandwrittenDigitsRecognition
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());
+            NeuronApp.App myApp = new App();
         }
     }
 }

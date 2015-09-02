@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using HandwrittenDigitsRecognition.NeuralNetwork.Layers;
+using HandwrittenDigitsRecognition.NeuralNetwork.Neurons;
+using System.Collections.Generic;
 
-namespace HandwrittenDigitsRecognition.NeuralNetwork
+namespace HandwrittenDigitsRecognition.NeuralNetwork.Layers
 {
-    class InputLayer : ILayerable
+    class InputLayer : Layer
     {
         private List<Input> inputs;
         public List<Input> Inputs
@@ -29,7 +31,7 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork
             }
         }
 
-        public List<Input> GetElements()
+        public List<Node> GetElements()
         {
             return Inputs;
         }

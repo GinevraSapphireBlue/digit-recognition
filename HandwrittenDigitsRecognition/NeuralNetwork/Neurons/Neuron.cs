@@ -1,9 +1,10 @@
-﻿using System;
+﻿using HandwrittenDigitsRecognition.NeuralNetwork.Neurons;
+using System;
 using System.Collections.Generic;
 
-namespace HandwrittenDigitsRecognition.NeuralNetwork
+namespace HandwrittenDigitsRecognition.NeuralNetwork.Neurons
 {
-    abstract class Neuron : IOutputable
+    abstract class Neuron : Node
     {
         /**
           * Represents an abstract neuron, with no activation function given
@@ -15,15 +16,15 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork
             set { bias = value; }
         }
 
-        private Dictionary<IOutputable, double> inputs;
-        public Dictionary<IOutputable, double> Inputs
+        private Dictionary<Node, double> inputs;
+        public Dictionary<Node, double> Inputs
         {
             get { return inputs; }
             set { inputs = value; }
         }
 
-        private List<IOutputable> consumers;
-        public List<IOutputable> Consumers
+        private List<Node> consumers;
+        public List<Node> Consumers
         {
             get { return consumers; }
             set { consumers = value; }
@@ -88,21 +89,21 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork
         public Neuron()
         {
             Bias = Rand.NextDouble()/4;
-            Inputs = new Dictionary<IOutputable, double>();
-            Consumers = new List<IOutputable>();
+            Inputs = new Dictionary<Node, double>();
+            Consumers = new List<Node>();
             ExpectedValue = -1;
             Fired = false;
             ErrorCalculated = false;
         }
 
         /* SETTING INPUTS AND CONSUMERS */
-        public void AddInput(IOutputable input)
+        public void AddInput(Node input)
         {
             Inputs.Add(input, Rand.NextDouble()/4);
         }
-        public void AddInputs(ICollection<IOutputable> newInputs)
+        public void AddInputs(ICollection<Node> newInputs)
         {
-            foreach (IOutputable input in newInputs)
+            foreach (Node input in newInputs)
             {
                 AddInput(input);
             }
@@ -125,7 +126,7 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork
         /* BASIC FUNCTIONALITY */
         public void Fire()
         {
-            Output = ActivationFunction(SumInputs());
+            Output = ActivationFunction(SumWeightedInputs());
             Fired = true;
         }
 
@@ -153,7 +154,7 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork
 
         public void UpdateWeights(double learningCoef)
         {
-            foreach (IOutputable input in Inputs.Keys)
+            foreach (Node input in Inputs.Keys)
             {
                 Inputs[input] += learningCoef * ErrorCoef * input.GetOutput();
             }
@@ -168,31 +169,24 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork
         }
 
         /* HELPERS */
-        protected double SumInputs()
+        protected double SumWeightedInputs()
         {
             double weightedInput = 0;
-            foreach (Neuron n in Inputs.Keys)
+            foreach (Node n in Inputs.Keys)
             {
-                weightedInput += n.Output * Inputs[n];
+                weightedInput += n.GetOutput() * Inputs[n];
             }
             weightedInput += Bias;
             return weightedInput;
         }
-        protected double SumWeightedInputs()
-        {
-            double sum = 0;
-            foreach (Neuron n in inputs.Keys)
-                sum += inputs[n] * n.Output;
-            return sum;
-        }
-        protected double GetWeight(IOutputable input)
+        protected double GetWeight(Node input)
         {
             return Inputs[input];
         }
 
         /* DEPENDENT ON TYPE OF NEURON - NOT IMPLEMENTED IN ABSTRACT NEURON */
-        protected double ActivationFunction(double input);
-        protected double DerivativeOfActivationFunction(double x);
+        protected abstract double ActivationFunction(double input);
+        protected abstract double DerivativeOfActivationFunction(double x);
 
     }
 }

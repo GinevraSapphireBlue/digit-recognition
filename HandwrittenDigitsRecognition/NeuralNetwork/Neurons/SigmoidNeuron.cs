@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HandwrittenDigitsRecognition.NeuralNetwork
+namespace HandwrittenDigitsRecognition.NeuralNetwork.Neurons
 {
     class SigmoidNeuron : Neuron
     {
@@ -18,13 +18,13 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork
         }
 
         /* IMPLEMENTATIONS OF ACTIVATION FUNCTION AND ITS DERIVATIVE */
-        protected double ActivationFunction(double input)
+        protected override double ActivationFunction(double input)
         {
             /* Sigmoid activation function */
             return 1 / (Math.Exp(-Lambda * input) + 1);
         }
 
-        protected double DerivativeOfActivationFunction(double weight)
+        protected override double DerivativeOfActivationFunction(double weight)
         {
             double fx = ActivationFunction(weight);
             return Lambda * fx * (1 - fx);

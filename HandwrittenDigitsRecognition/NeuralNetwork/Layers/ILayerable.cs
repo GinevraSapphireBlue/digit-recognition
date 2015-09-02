@@ -4,6 +4,6 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork
 {
     interface ILayerable
     {
-        public List<IOutputable> GetElements();
+        /*List<IOutputable> GetElements();*/
     }
 }

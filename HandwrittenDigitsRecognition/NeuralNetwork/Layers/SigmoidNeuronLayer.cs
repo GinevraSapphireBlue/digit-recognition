@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using HandwrittenDigitsRecognition.NeuralNetwork.Neurons;
+using System.Collections.Generic;
 
-namespace HandwrittenDigitsRecognition.NeuralNetwork
+namespace HandwrittenDigitsRecognition.NeuralNetwork.Layers
 {
-    class SigmoidNeuronLayer : ILayerable
+    class SigmoidNeuronLayer : Layer
     {
-        private List<Neuron> neurons;
-        public List<Neuron> Neurons
+        private List<Node> neurons;
+        public List<Node> Neurons
         {
             set { neurons = value; }
             get { return neurons; }
@@ -21,20 +22,14 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork
             }
         }
 
-        /* ILayerable implementation */
-        public List<Neuron> GetElements()
-        {
-            return Neurons;
-        }
-
         /* SET UP CONNECTIONS TO PREVIOUS LAYER */
-        public void LinkBackToLayer(ILayerable layer)
+        public void LinkBackToLayer(Layer layer)
         {
             foreach (Neuron neuron in Neurons)
             {
                 neuron.AddInputs(layer.GetElements());
             }
-            foreach (IOutputable element in layer.GetElements())
+            foreach (Node element in layer.GetElements())
             {
                 element.AddConsumers(Neurons);
             }
@@ -79,6 +74,10 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork
             {
                 n.UpdateWeights(learningCoef);
             }
+        }
+        public List<Node> GetElements()
+        {
+            return Neurons;
         }
     }
 }

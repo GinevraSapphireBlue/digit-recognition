@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 using HandwrittenDigitsRecognition.NeuralNetwork;
 using System.IO;
 
-namespace HandwrittenDigitsRecognition.Application
+namespace HandwrittenDigitsRecognition.NeuronApp
 {
-    class NetworkTraining
+    class NetworkTesting
     {
         private Network digitNetwork;
         public Network DigitNetwork
         {
             get { return digitNetwork; }
-            private set { digitNetwork = value; }     
+            private set { digitNetwork = value; }
         }
         private string fileLocation;
         public string FileLocation { get; set; }
@@ -25,16 +25,16 @@ namespace HandwrittenDigitsRecognition.Application
         private bool dataReadIn;
         private bool DataReadIn { get; set; }
 
-        private int[][] trainingData;
-        public int[][] TrainingData
+        private int[][] testingData;
+        public int[][] TestingData
         {
             get
             {
                 if (!DataReadIn)
-                    ReadTrainingData();
-                return trainingData;
+                    ReadTestingData();
+                return testingData;
             }
-            private set { trainingData = value; }
+            private set { testingData = value; }
         }
 
         private int[] expectedResults;
@@ -43,7 +43,7 @@ namespace HandwrittenDigitsRecognition.Application
             get
             {
                 if (!DataReadIn)
-                    ReadTrainingData();
+                    ReadTestingData();
                 return expectedResults;
             }
             private set { expectedResults = value; }
@@ -52,46 +52,50 @@ namespace HandwrittenDigitsRecognition.Application
         private int numberOfExamples;
         public int NumerOfExamples { get; protected set; }
 
-        /* CONSTRUCTOR */
-        public NetworkTraining(Network trainNetwork, string file, double learnCoef)
+        private int countRecognized;
+        public int CountRecognized { get; protected set; }
+
+        private int countUnrecognized;
+        public int CountUnrecognized { get; protected set; }
+
+        private double averageError;
+        public double AverageError { get; protected set; }
+
+        public NetworkTesting(Network testNetwork, string file, double learnCoef)
         {
-            DigitNetwork = trainNetwork;
+            DigitNetwork = testNetwork;
             FileLocation = file;
             LearningCoef = learnCoef;
             DataReadIn = false;
-            ReadTrainingData();
+            ReadTestingData();
             NumerOfExamples = ExpectedResults.Length;
         }
 
-        /* TRAIN NETWORK */
-        public double TrainNetwork()
+        /* TEST NETWORK */
+        public double TestNetwork()
         {
+            AverageError = 0;
+            CountRecognized = 0;
+            CountUnrecognized = 0;
+
             for (int i = 0; i < NumerOfExamples; i++)
             {
                 /* Add inputs to network and calculate outputs */
                 DigitNetwork.ResetAll();
-                DigitNetwork.SetInputValues(TrainingData[i]);
+                DigitNetwork.SetInputValues(TestingData[i]);
                 DigitNetwork.FeedResultsForward();
 
-                /* Prepare array with expected values - 0s for all but the correct digit and 1 for the correct digit */
-                int expectedDigit = ExpectedResults[i];
-                int[] expectedValues = new int[10];
-                for (int j = 0; j < 10; j++)
-                {
-                    if (j == expectedDigit)
-                        expectedValues[j] = 1;
-                    else
-                        expectedValues[j] = 0;
-                }
-
-                /* Calculate errors and propagate them back through the network */
-                DigitNetwork.PropagateErrorsBack(LearningCoef, expectedValues);
-
-                /*  */
+                AverageError += DigitNetwork.GetResult() - ExpectedResults[i];
+                if (DigitNetwork.GetResult() == ExpectedResults[i])
+                    CountRecognized++;
+                else
+                    CountUnrecognized++;
             }
+            AverageError /= NumerOfExamples;
+            return AverageError;
         }
 
-        private void ReadTrainingData()
+        public void ReadTestingData()
         {
             StreamReader reader;
 
@@ -105,7 +109,7 @@ namespace HandwrittenDigitsRecognition.Application
                 {
                     items = line.Split(',');
                     for (int j = 0; j < DigitNetwork.InputSize; j++)
-                        trainingData[i][j] = int.Parse(items[j]);
+                        testingData[i][j] = int.Parse(items[j]);
                     expectedResults[i] = int.Parse(items[DigitNetwork.InputSize]);
                     i++;
                 }

@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using HandwrittenDigitsRecognition.NeuralNetwork.Neurons;
+using System.Collections.Generic;
 
-namespace HandwrittenDigitsRecognition.NeuralNetwork
+namespace HandwrittenDigitsRecognition.NeuralNetwork.Neurons
 {
-    class Input : IOutputable
+    class Input : Node
     {
         /**
           * Represents single input to neural network.

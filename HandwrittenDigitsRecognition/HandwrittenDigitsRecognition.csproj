@@ -44,6 +44,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="NeuralNetwork\Layers\Layer.cs" />
+    <Compile Include="NeuralNetwork\Neurons\Node.cs" />
+    <Compile Include="NeuronApp\App.cs" />
+    <Compile Include="NeuronApp\NetworkTesting.cs" />
+    <Compile Include="NeuronApp\NetworkTraining.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -69,6 +74,8 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <None Include="NeuronApp\Data\optdigits.tes" />
+    <None Include="NeuronApp\Data\optdigits.tra" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

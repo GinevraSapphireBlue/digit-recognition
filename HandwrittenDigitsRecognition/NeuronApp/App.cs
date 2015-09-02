@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using HandwrittenDigitsRecognition.NeuralNetwork;
 
-namespace HandwrittenDigitsRecognition.Application
+namespace HandwrittenDigitsRecognition.NeuronApp
 {
     class App
     {
@@ -30,9 +30,22 @@ namespace HandwrittenDigitsRecognition.Application
             DigitNetwork = new Network(64, numOfLayers, numOfNeuronsInLayer);
             LearningCoef = learnCoef;
 
-            Training = new NetworkTraining(DigitNetwork, "Data\optdigits.tra", LearningCoef);
-            Testing = new NetworkTesting(DigitNetwork, "Data\optdigits.tes", LearningCoef);
+            Training = new NetworkTraining(DigitNetwork, "Data/optdigits.tra", LearningCoef);
+            Testing = new NetworkTesting(DigitNetwork, "Data/optdigits.tes", LearningCoef);
+        }
 
+        public void Train()
+        {
+            double oldAverageError = 10;
+            double newAverageError = 9;
+            int i = 1;
+            while(newAverageError < oldAverageError){
+                Console.WriteLine("Training round number {0}", i);
+                oldAverageError = newAverageError;
+                newAverageError = Training.TrainNetwork();
+                Console.WriteLine("Average error = {0}", newAverageError);
+                i++;
+            }
         }
     }
 }
