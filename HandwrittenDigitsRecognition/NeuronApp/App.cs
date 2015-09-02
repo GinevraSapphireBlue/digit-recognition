@@ -29,9 +29,10 @@ namespace HandwrittenDigitsRecognition.NeuronApp
         {
             DigitNetwork = new Network(64, numOfLayers, numOfNeuronsInLayer);
             LearningCoef = learnCoef;
+            string path = @"C:\Users\Ania\Documents\Visual Studio 2013\Projects\HandwrittenDigitsRecognition\HandwrittenDigitsRecognition\NeuronApp\optdigits.tra";
 
-            Training = new NetworkTraining(DigitNetwork, "Data/optdigits.tra", LearningCoef);
-            Testing = new NetworkTesting(DigitNetwork, "Data/optdigits.tes", LearningCoef);
+            Training = new NetworkTraining(DigitNetwork, path, LearningCoef);
+            Testing = new NetworkTesting(DigitNetwork, "Data\\optdigits.tes", LearningCoef);
         }
 
         public void Train()

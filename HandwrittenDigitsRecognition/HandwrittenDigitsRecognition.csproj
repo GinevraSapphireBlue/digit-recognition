@@ -55,11 +55,9 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="NeuralNetwork\Layers\ILayerable.cs" />
     <Compile Include="NeuralNetwork\Network.cs" />
     <Compile Include="NeuralNetwork\Neurons\Input.cs" />
     <Compile Include="NeuralNetwork\Layers\InputLayer.cs" />
-    <Compile Include="NeuralNetwork\Neurons\IOutputable.cs" />
     <Compile Include="NeuralNetwork\Neurons\Neuron.cs" />
     <Compile Include="NeuralNetwork\Layers\SigmoidNeuronLayer.cs" />
     <Compile Include="NeuralNetwork\Neurons\SigmoidNeuron.cs" />
@@ -75,7 +73,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <None Include="NeuronApp\Data\optdigits.tes" />
-    <None Include="NeuronApp\Data\optdigits.tra" />
+    <None Include="NeuronApp\optdigits.tra" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

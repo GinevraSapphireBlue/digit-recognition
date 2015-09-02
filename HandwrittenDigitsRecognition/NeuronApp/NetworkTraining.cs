@@ -25,8 +25,8 @@ namespace HandwrittenDigitsRecognition.NeuronApp
         private bool dataReadIn;
         private bool DataReadIn { get; set; }
 
-        private int[][] trainingData;
-        public int[][] TrainingData
+        private Dictionary<int, List<int>> trainingData;
+        public Dictionary<int, List<int>> TrainingData
         {
             get
             {
@@ -37,8 +37,8 @@ namespace HandwrittenDigitsRecognition.NeuronApp
             private set { trainingData = value; }
         }
 
-        private int[] expectedResults;
-        public int[] ExpectedResults
+        private List<int> expectedResults;
+        public List<int> ExpectedResults
         {
             get
             {
@@ -61,11 +61,11 @@ namespace HandwrittenDigitsRecognition.NeuronApp
             DataReadIn = false;
             ReadTrainingData();
             if (ExpectedResults != null)
-                NumerOfExamples = ExpectedResults.Length;
+                NumerOfExamples = ExpectedResults.Count;
             else
             {
                 NumerOfExamples = 0;
-                Console.WriteLine("No examples read!!!");
+                Console.WriteLine("No training examples read!!!");
             }
         }
 
@@ -78,7 +78,7 @@ namespace HandwrittenDigitsRecognition.NeuronApp
             {
                 /* Add inputs to network and calculate outputs */
                 DigitNetwork.ResetAll();
-                DigitNetwork.SetInputValues(TrainingData[i]);
+                DigitNetwork.SetInputValues(TrainingData[i].ToArray<int>());
                 DigitNetwork.FeedResultsForward();
 
                 averageError += DigitNetwork.GetResult() - ExpectedResults[i];
@@ -93,7 +93,8 @@ namespace HandwrittenDigitsRecognition.NeuronApp
         private void ReadTrainingData()
         {
             StreamReader reader;
-
+            TrainingData = new Dictionary<int, List<int>>();
+            ExpectedResults = new List<int>();
             try
             {
                 reader = File.OpenText(FileLocation);
@@ -102,10 +103,11 @@ namespace HandwrittenDigitsRecognition.NeuronApp
                 int i = 0;
                 while ((line = reader.ReadLine()) != null)
                 {
+                    TrainingData.Add(i, new List<int>(64));
                     items = line.Split(',');
                     for (int j = 0; j < DigitNetwork.InputSize; j++)
-                        trainingData[i][j] = int.Parse(items[j]);
-                    expectedResults[i] = int.Parse(items[DigitNetwork.InputSize]);
+                        TrainingData[i][j] = int.Parse(items[j]);
+                    ExpectedResults.Add(int.Parse(items[DigitNetwork.InputSize]));
                     i++;
                 }
                 reader.Close();
