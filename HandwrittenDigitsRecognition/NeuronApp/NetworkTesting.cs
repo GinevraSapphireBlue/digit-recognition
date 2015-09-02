@@ -68,7 +68,13 @@ namespace HandwrittenDigitsRecognition.NeuronApp
             LearningCoef = learnCoef;
             DataReadIn = false;
             ReadTestingData();
-            NumerOfExamples = ExpectedResults.Length;
+            if(ExpectedResults != null)
+                NumerOfExamples = ExpectedResults.Length;
+            else
+            {
+                NumerOfExamples = 0;
+                Console.WriteLine("No testing examples read!!!");
+            }
         }
 
         /* TEST NETWORK */
