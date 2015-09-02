@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace HandwrittenDigitsRecognition.NeuralNetwork
 {
@@ -20,6 +16,11 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork
         {
             set { layers = value; }
             get { return layers; }
+        }
+
+        public SigmoidNeuronLayer OutputLayer
+        {
+            get { return (SigmoidNeuronLayer)Layers[LayerCount]; }
         }
 
         private int inputSize;
@@ -58,12 +59,41 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork
                 ((SigmoidNeuronLayer)Layers[i]).FireAll();
             }
         }
-        public void PropagateErrorsBack(double learningCoef, int[] expectedValues)
+        public int GetResult()
         {
-            /* Calculate errors and new weights for output layer */
-            ((SigmoidNeuronLayer)Layers[LayerCount]).UpdateAllWeights(learningCoef, expectedValues);
-            /* Calculate errors and new weights for hidden layers, from last to first */
+            int chosenDigit = 0;
+            double largestOutput = OutputLayer.Neurons[0].GetOutput();
+            for (int i = 1; i < 10; i++)
+            {
+                double currentNeuronOutput = OutputLayer.Neurons[i].GetOutput();
+                if (currentNeuronOutput > largestOutput)
+                {
+                    chosenDigit = i;
+                    largestOutput = currentNeuronOutput;
+                }
+            }
+            return chosenDigit;
+        }
+        public void PropagateErrorsBack(double learningCoef, int expectedDigit)
+        {
+            /* Prepare array with expected values - 0s for all but the correct digit and 1 for the correct digit */
+            int[] expectedValues = new int[10];
+            for (int j = 0; j < 10; j++)
+            {
+                if (j == expectedDigit)
+                    expectedValues[j] = 1;
+                else
+                    expectedValues[j] = 0;
+            }
+
+            /* Calculate errors for output layer */
+            ((SigmoidNeuronLayer)Layers[LayerCount]).CalculateAllErrors(expectedValues);
+            /* Calculate errors for hidden layers */
             for (int i = LayerCount - 1; i >= 0; i--)
+                ((SigmoidNeuronLayer)Layers[i]).CalculateAllErrors();
+
+            /* Update new weights for all layers, from last to first */
+            for (int i = LayerCount; i >= 0; i--)
             {
                 ((SigmoidNeuronLayer)Layers[i]).UpdateAllWeights(learningCoef);
             }

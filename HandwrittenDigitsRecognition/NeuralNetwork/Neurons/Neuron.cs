@@ -129,9 +129,30 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork
             Fired = true;
         }
 
-        public void UpdateWeights(double learningCoef, int expected = -1)
+        public void CalculateErrorCoef(int expected = -1)
         {
             ExpectedValue = expected;
+            double totalWeight = SumWeightedInputs();
+
+            if (ExpectedValue == -1) /* Valid for hidden layers' neurons */
+            {
+                double totalWeightedErrorFromUp = 0;
+                foreach (Neuron n in Consumers)
+                {
+                    totalWeightedErrorFromUp += n.GetWeight(this) * n.ErrorCoef;
+                }
+                ErrorCoef = DerivativeOfActivationFunction(totalWeight) * totalWeightedErrorFromUp;
+            }
+            else /* Valid for output layer neurons */
+            {
+                ErrorCoef = DerivativeOfActivationFunction(totalWeight) * (ExpectedValue - Output);
+            }
+
+            ErrorCalculated = true;
+        }
+
+        public void UpdateWeights(double learningCoef)
+        {
             foreach (IOutputable input in Inputs.Keys)
             {
                 Inputs[input] += learningCoef * ErrorCoef * input.GetOutput();
@@ -167,26 +188,6 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork
         protected double GetWeight(IOutputable input)
         {
             return Inputs[input];
-        }
-        protected void CalculateErrorCoef()
-        {
-            double totalWeight = SumWeightedInputs();
-
-            if (ExpectedValue == -1) /* Valid for hidden layers' neurons */
-            {
-                double totalWeightedErrorFromUp = 0;
-                foreach (Neuron n in Consumers)
-                {
-                    totalWeightedErrorFromUp += n.GetWeight(this) * n.ErrorCoef;
-                }
-                ErrorCoef = DerivativeOfActivationFunction(totalWeight) * totalWeightedErrorFromUp;
-            }
-            else /* Valid for output layer neurons */
-            {
-                ErrorCoef = DerivativeOfActivationFunction(totalWeight) * (ExpectedValue - Output);
-            }
-
-            ErrorCalculated = true;
         }
 
         /* DEPENDENT ON TYPE OF NEURON - NOT IMPLEMENTED IN ABSTRACT NEURON */

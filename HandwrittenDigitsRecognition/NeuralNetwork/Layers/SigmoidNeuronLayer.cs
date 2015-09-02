@@ -55,21 +55,29 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork
                 n.Reset();
             }
         }
-        public void UpdateAllWeights(double learningCoef, int[] expectedValues = null)
+        public void CalculateAllErrors(int[] expectedValues = null)
         {
             if (expectedValues != null) /* Output layer */
             {
                 for (int i = 0; i < Neurons.Count; i++)
                 {
-                    Neurons[i].UpdateWeights(learningCoef, expectedValues[i]);
+                    Neurons[i].CalculateErrorCoef(expectedValues[i]);
                 }
             }
             else /* Hidden layer */
             {
                 for (int i = 0; i < Neurons.Count; i++)
                 {
-                    Neurons[i].UpdateWeights(learningCoef);
+                    Neurons[i].CalculateErrorCoef();
                 }
+            }
+        }
+
+        public void UpdateAllWeights(double learningCoef)
+        {
+            foreach (Neuron n in Neurons)
+            {
+                n.UpdateWeights(learningCoef);
             }
         }
     }
