@@ -68,6 +68,7 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork
                 ((SigmoidNeuronLayer)Layers[i]).UpdateAllWeights(learningCoef);
             }
         }
+
         public void ResetAll()
         {
             for (int i = 1; i <= LayerCount; i++)
