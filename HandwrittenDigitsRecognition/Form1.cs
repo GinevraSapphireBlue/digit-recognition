@@ -20,22 +20,53 @@ namespace HandwrittenDigitsRecognition
 
         private void button1_Click(object sender, EventArgs e)
         {
-            ResultLabel.Text = "Proszę o cierpliwość. Próbuję rozszyfrować ręczne pismo";                      
-            UseWaitCursor = true;
-
             int numberOfLayers = int.Parse(textBox1.Text);
             int numberOfNeurons = int.Parse(textBox2.Text);
             double learningCoefficient = double.Parse(textBox3.Text);
             int numberOfEpochs = int.Parse(textBox4.Text);
-            
-            NeuronApp.App myApp = new App(numberOfLayers, numberOfNeurons, learningCoefficient, numberOfEpochs);
+            double correctPercent = 0;
 
-            StringBuilder sb = new StringBuilder("Udało mi się rozszyfrować ");
-            sb.Append(((int)(100 * ((double)myApp.Testing.CountCorrect) / (myApp.Testing.CountCorrect + myApp.Testing.CountIncorrect))).ToString());
-            sb.Append("% cyfr.");
-            ResultLabel.Text = sb.ToString();
-            button1.Text = "Sprawdź mnie ponownie";
-            UseWaitCursor = false;
+            NeuronApp.App myApp;
+            BackgroundWorker worker = new BackgroundWorker();
+            worker.WorkerReportsProgress = true;
+
+            worker.DoWork += new DoWorkEventHandler(
+                delegate(object o, DoWorkEventArgs args)
+                {
+                    BackgroundWorker bw = o as BackgroundWorker;
+
+                    //Report that neural network started working
+                    bw.ReportProgress(1);
+
+                    //Start the network and do the real work
+                    myApp = new App(numberOfLayers, numberOfNeurons, learningCoefficient, numberOfEpochs);
+                    correctPercent = (100 * ((double)myApp.Testing.CountCorrect) / (myApp.Testing.CountCorrect + myApp.Testing.CountIncorrect));
+                });
+
+            worker.ProgressChanged += new ProgressChangedEventHandler(
+                delegate(object o, ProgressChangedEventArgs args)
+                {
+                    if (args.ProgressPercentage == 1)
+                    {
+                        ResultLabel.Text = "Proszę o cierpliwość. Próbuję rozszyfrować ręczne pismo";
+                        UseWaitCursor = true;
+                    }
+                });
+
+            worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(
+                delegate(object o, RunWorkerCompletedEventArgs args)
+                {
+                    StringBuilder sb = new StringBuilder("Udało mi się rozszyfrować ");
+                    sb.Append(((int)correctPercent).ToString());
+                    sb.Append("% cyfr.");
+                    ResultLabel.Text = sb.ToString();
+                    button1.Text = "Sprawdź mnie ponownie";
+                    UseWaitCursor = false;
+                });
+
+            worker.RunWorkerAsync();
+                    
+            //NeuronApp.App myApp = new App(numberOfLayers, numberOfNeurons, learningCoefficient, numberOfEpochs);            
         }
     }
 }
