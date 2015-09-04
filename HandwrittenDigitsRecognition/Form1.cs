@@ -20,12 +20,22 @@ namespace HandwrittenDigitsRecognition
 
         private void button1_Click(object sender, EventArgs e)
         {
+            ResultLabel.Text = "Proszę o cierpliwość. Próbuję rozszyfrować ręczne pismo";                      
+            UseWaitCursor = true;
+
             int numberOfLayers = int.Parse(textBox1.Text);
             int numberOfNeurons = int.Parse(textBox2.Text);
             double learningCoefficient = double.Parse(textBox3.Text);
             int numberOfEpochs = int.Parse(textBox4.Text);
+            
             NeuronApp.App myApp = new App(numberOfLayers, numberOfNeurons, learningCoefficient, numberOfEpochs);
-            ResultLabel.Text = (100 * ((double)myApp.Testing.CountCorrect) / (myApp.Testing.CountCorrect + myApp.Testing.CountIncorrect)).ToString();
+
+            StringBuilder sb = new StringBuilder("Udało mi się rozszyfrować ");
+            sb.Append(((int)(100 * ((double)myApp.Testing.CountCorrect) / (myApp.Testing.CountCorrect + myApp.Testing.CountIncorrect))).ToString());
+            sb.Append("% cyfr.");
+            ResultLabel.Text = sb.ToString();
+            button1.Text = "Sprawdź mnie ponownie";
+            UseWaitCursor = false;
         }
     }
 }
