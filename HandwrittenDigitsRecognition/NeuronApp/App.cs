@@ -40,52 +40,41 @@ namespace HandwrittenDigitsRecognition.NeuronApp
             set { expectedTrainingResults = value; }
         }
 
-        public App(int numOfLayers = 2, int numOfNeuronsInLayer = 10, double learnCoef = 1)
+        private Dictionary<int, List<int>> testingData;
+        public Dictionary<int, List<int>> TestingData
+        {
+            get { return testingData; }
+            set { testingData = value; }
+        }
+
+        private List<int> expectedTestingResults;
+        public List<int> ExpectedTestingResults
+        {
+            get { return expectedTestingResults; }
+            set { expectedTestingResults = value; }
+        }
+
+        public App(int numOfLayers = 2, int numOfNeuronsInLayer = 10, double learnCoef = 1, int numberOfEpochs = 10)
         {
             DigitNetwork = new Network(64, numOfLayers, numOfNeuronsInLayer);
             LearningCoef = learnCoef;
             string fileTrain = "NeuronApp\\optdigits.tra";
-            string pathTest = Path.Combine(Directory.GetCurrentDirectory(), "NeuronApp\\optdigits.tes");
+            string fileTest = "NeuronApp\\optdigits.tes";
 
             TrainingData = new Dictionary<int, List<int>>();
+            TestingData = new Dictionary<int, List<int>>();
             ExpectedTrainingResults = new List<int>();
-            //ReadTrainingData(trainingData, expectedResults);
+            ExpectedTestingResults = new List<int>();
 
             Training = new NetworkTraining(DigitNetwork, fileTrain, LearningCoef, TrainingData, ExpectedTrainingResults);
-            Training.TrainNetwork();
-            //Testing = new NetworkTesting(DigitNetwork, pathTest, LearningCoef);
-        }
+            Training.TrainNetwork(numberOfEpochs);
+            Console.WriteLine("Correct = {0}, Incorrect = {1}", Training.CountCorrect, Training.CountIncorrect);
+            Console.WriteLine("Percent correct = {0}", 100 * ((double)Training.CountCorrect) / (Training.CountCorrect + Training.CountIncorrect));
 
-        public void ReadTrainingData(Dictionary<int, List<int>> trainingData, List<int> expectedResults)
-        {
-            string path = Path.Combine(Directory.GetCurrentDirectory(), "NeuronApp\\optdigits.tra");
-
-            using (StreamReader reader = new StreamReader(path))
-            {
-                string line;
-                while ((line = reader.ReadLine()) != null)
-                    ProcessInput(line, trainingData, expectedResults);
-                Console.WriteLine("Finished reading in training data, read in {0} lines", trainingData.Count);
-                reader.Close();
-            }
-        }
-
-        public void ProcessInput(string line, Dictionary<int, List<int>> trainingData, List<int> expectedResults)
-        {
-            string[] items;
-
-            int i = trainingData.Count;
-            trainingData.Add(i, new List<int>(64));
-            items = line.Split(',');
-            for (int j = 0; j < 64; j++)
-            {
-                trainingData[i].Add(int.Parse(items[j]));
-                Console.Write(trainingData[i][j]);
-                Console.Write(" ");
-            }
-            Console.WriteLine();
-            expectedResults.Add(int.Parse(items[64]));
-            //Console.WriteLine(line);
+            Testing = new NetworkTesting(DigitNetwork, fileTest, LearningCoef, TestingData, ExpectedTestingResults);
+            Testing.TestNetwork();
+            Console.WriteLine("Correct = {0}, Incorrect = {1}", Testing.CountCorrect, Testing.CountIncorrect);
+            Console.WriteLine("Percent correct = {0}", 100 * ((double)Testing.CountCorrect) / (Testing.CountCorrect + Testing.CountIncorrect));
         }
 
         public void Train()

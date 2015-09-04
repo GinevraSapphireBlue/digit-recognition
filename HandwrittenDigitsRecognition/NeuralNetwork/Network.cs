@@ -1,4 +1,6 @@
 ﻿using HandwrittenDigitsRecognition.NeuralNetwork.Layers;
+using HandwrittenDigitsRecognition.NeuralNetwork.Neurons;
+using System;
 using System.Collections.Generic;
 
 namespace HandwrittenDigitsRecognition.NeuralNetwork
@@ -31,7 +33,7 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork
         {
             InputSize = numOfInputs;
             /* numOfLayers - number of hidden layers;
-             * LayerCount - number of hidden layers + output layer */
+             * LayerCount - number of hidden layers + output layer (input layer has id 0, output layer has id LayerCount */
             LayerCount = numOfLayers + 1;
             Layers = new List<Layer>();
             //Add input layer containing numOfInputs inputs, all set initially to 0
@@ -57,6 +59,7 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork
             /* Fire all neuron layers in order */
             for (int i = 1; i <= LayerCount; i++)
             {
+                //Console.WriteLine("Layer {0}", i);
                 ((SigmoidNeuronLayer)Layers[i]).FireAll();
             }
         }
@@ -91,11 +94,38 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork
             ((SigmoidNeuronLayer)Layers[LayerCount]).CalculateAllErrors(expectedValues);
             /* Calculate errors for hidden layers */
             for (int i = LayerCount - 1; i > 0; i--)
+            {
+                //Console.WriteLine("Calculating errors for layer {0}", i);
                 ((SigmoidNeuronLayer)Layers[i]).CalculateAllErrors();
-
+            }
+            /*
+            Console.WriteLine("Weighted inputs for first hidden layer:");
+            foreach (Neuron n in ((SigmoidNeuronLayer)Layers[1]).Neurons)
+            {
+                double sum = 0;
+                foreach (Node node in n.Inputs.Keys)
+                {
+                    sum += node.GetOutput() * n.Inputs[node];
+                }
+                Console.Write("{0} ", sum);
+            }
+            Console.WriteLine();
+            Console.WriteLine("Proper errors from above for layer 1:");
+            foreach (Neuron n in ((SigmoidNeuronLayer)Layers[1]).Neurons)
+            {
+                double sum = 0;
+                foreach (Neuron node in n.Consumers)
+                {
+                    sum += node.GetWeight(n) * node.ErrorCoef;
+                }
+                Console.Write("{0} ", sum);
+            }
+            Console.WriteLine();
+            */
             /* Update new weights for all layers, from last to first */
             for (int i = LayerCount; i > 0; i--)
             {
+                //Console.WriteLine("Updating weights in layer {0}", i);
                 ((SigmoidNeuronLayer)Layers[i]).UpdateAllWeights(learningCoef);
             }
         }

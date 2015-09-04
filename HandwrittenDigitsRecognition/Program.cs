@@ -15,35 +15,6 @@ namespace HandwrittenDigitsRecognition
         /// The main entry point for the application.
         /// </summary>
         /// 
-        /*
-        private bool dataReadIn;
-        private bool DataReadIn { get; set; }
-
-        
-        private Dictionary<int, List<int>> trainingData;
-        public Dictionary<int, List<int>> TrainingData
-        {
-            static get
-            {
-                if (trainingData == null)
-                    trainingData = new Dictionary<int, List<int>>();
-                return trainingData;
-            }
-            private static set { trainingData = value; }
-        }
-
-        private List<int> expectedResults;
-        public List<int> ExpectedResults
-        {
-            static get
-            {
-                if (expectedResults == null)
-                    expectedResults = new List<int>();
-                return expectedResults;
-            }
-            private static set { expectedResults = value; }
-        }
-        */
          
         [STAThread]
         static void Main()
@@ -54,7 +25,7 @@ namespace HandwrittenDigitsRecognition
             Dictionary<int, List<int>> trainingData = new Dictionary<int, List<int>>();
             List<int> expectedResults = new List<int>();
             //ReadTrainingData(trainingData, expectedResults);
-            NeuronApp.App myApp = new App();
+            NeuronApp.App myApp = new App(2, 10, 0.03, 100);
         }
 
         static void ReadTrainingData(Dictionary<int, List<int>> trainingData, List<int> expectedResults)

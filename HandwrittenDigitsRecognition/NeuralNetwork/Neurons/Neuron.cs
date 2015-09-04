@@ -88,7 +88,7 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork.Neurons
         /* CONSTRUCTOR STUB */
         public Neuron()
         {
-            Bias = Rand.NextDouble()/4;
+            Bias = (Rand.NextDouble() - 0.5) / 2;
             Inputs = new Dictionary<Node, double>();
             Consumers = new List<Node>();
             ExpectedValue = -1;
@@ -99,9 +99,9 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork.Neurons
         /* SETTING INPUTS AND CONSUMERS */
         public void AddInput(Node input)
         {
-            Inputs.Add(input, Rand.NextDouble()/4);
+            Inputs.Add(input, (Rand.NextDouble() - 0.5)/2);
         }
-        public void AddInputs(ICollection<Node> newInputs)
+        public void AddInput(ICollection<Node> newInputs)
         {
             foreach (Node input in newInputs)
             {
@@ -137,18 +137,20 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork.Neurons
 
             if (ExpectedValue == -1) /* Valid for hidden layers' neurons */
             {
+                //Console.WriteLine("Calculating hidden layer error coefficient");
                 double totalWeightedErrorFromUp = 0;
                 foreach (Neuron n in Consumers)
                 {
                     totalWeightedErrorFromUp += n.GetWeight(this) * n.ErrorCoef;
                 }
+                //Console.WriteLine("totalWeight = {0}, totalWeightedErrorFromUp = {1}", totalWeight, totalWeightedErrorFromUp);
                 ErrorCoef = DerivativeOfActivationFunction(totalWeight) * totalWeightedErrorFromUp;
             }
             else /* Valid for output layer neurons */
             {
                 ErrorCoef = DerivativeOfActivationFunction(totalWeight) * (ExpectedValue - Output);
             }
-
+            //Console.WriteLine("Error Coefficient = {0}", ErrorCoef);
             ErrorCalculated = true;
         }
 
@@ -180,7 +182,7 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork.Neurons
             weightedInput += Bias;
             return weightedInput;
         }
-        protected double GetWeight(Node input)
+        public double GetWeight(Node input)
         {
             return Inputs[input];
         }

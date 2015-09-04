@@ -1,4 +1,5 @@
 ﻿using HandwrittenDigitsRecognition.NeuralNetwork.Neurons;
+using System;
 using System.Collections.Generic;
 
 namespace HandwrittenDigitsRecognition.NeuralNetwork.Layers
@@ -27,7 +28,7 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork.Layers
         {
             foreach (Neuron neuron in Neurons)
             {
-                neuron.AddInputs(layer.GetElements());
+                neuron.AddInput(layer.GetElements());
             }
             foreach (Node element in layer.GetElements())
             {
@@ -41,7 +42,9 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork.Layers
             foreach (Neuron n in Neurons)
             {
                 n.Fire();
+                //Console.Write("{0} ", n.GetOutput());
             }
+            //Console.WriteLine();
         }
         public void ResetAll()
         {
@@ -54,6 +57,7 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork.Layers
         {
             if (expectedValues != null) /* Output layer */
             {
+                //Console.WriteLine("Output layer:");
                 for (int i = 0; i < Neurons.Count; i++)
                 {
                     Neurons[i].CalculateErrorCoef(expectedValues[i]);
@@ -61,6 +65,7 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork.Layers
             }
             else /* Hidden layer */
             {
+                //Console.WriteLine("Hidden layer:");
                 for (int i = 0; i < Neurons.Count; i++)
                 {
                     Neurons[i].CalculateErrorCoef();

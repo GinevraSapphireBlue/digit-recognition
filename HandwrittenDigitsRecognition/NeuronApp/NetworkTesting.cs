@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using HandwrittenDigitsRecognition.NeuralNetwork;
 using System.IO;
+using HandwrittenDigitsRecognition.NeuralNetwork.Neurons;
 
 namespace HandwrittenDigitsRecognition.NeuronApp
 {
@@ -16,117 +17,128 @@ namespace HandwrittenDigitsRecognition.NeuronApp
             get { return digitNetwork; }
             private set { digitNetwork = value; }
         }
-        private string fileLocation;
-        public string FileLocation { get; set; }
+        private string fileName;
+        public string FileName { get; set; }
 
         private double learningCoef;
         public double LearningCoef { get; set; }
 
-        private bool dataReadIn;
-        private bool DataReadIn { get; set; }
-
-        private int[][] testingData;
-        public int[][] TestingData
+        private Dictionary<int, List<int>> testingData;
+        public Dictionary<int, List<int>> TestingData
         {
             get
             {
-                if (!DataReadIn)
-                    ReadTestingData();
                 return testingData;
             }
             private set { testingData = value; }
         }
 
-        private int[] expectedResults;
-        public int[] ExpectedResults
+        private List<int> expectedResults;
+        public List<int> ExpectedResults
         {
             get
             {
-                if (!DataReadIn)
-                    ReadTestingData();
                 return expectedResults;
             }
             private set { expectedResults = value; }
         }
 
         private int numberOfExamples;
-        public int NumerOfExamples { get; protected set; }
+        public int NumberOfExamples { get; protected set; }
 
-        private int countRecognized;
-        public int CountRecognized { get; protected set; }
+        private int countCorrect;
+        public int CountCorrect { get; protected set; }
 
-        private int countUnrecognized;
-        public int CountUnrecognized { get; protected set; }
+        private int countIncorrect;
+        public int CountIncorrect { get; protected set; }
 
         private double averageError;
         public double AverageError { get; protected set; }
 
-        public NetworkTesting(Network testNetwork, string file, double learnCoef)
+        public NetworkTesting(Network testNetwork, string file, double learnCoef, Dictionary<int, List<int>> testingData, List<int> expectedValues)
         {
             DigitNetwork = testNetwork;
-            FileLocation = file;
+            FileName = file;
             LearningCoef = learnCoef;
-            DataReadIn = false;
+            TestingData = testingData;
+            ExpectedResults = expectedValues;
             ReadTestingData();
             if(ExpectedResults != null)
-                NumerOfExamples = ExpectedResults.Length;
+                NumberOfExamples = ExpectedResults.Count;
             else
             {
-                NumerOfExamples = 0;
+                NumberOfExamples = 0;
                 Console.WriteLine("No testing examples read!!!");
             }
+            CountCorrect = 0;
+            CountIncorrect = 0;
         }
 
         /* TEST NETWORK */
         public double TestNetwork()
         {
             AverageError = 0;
-            CountRecognized = 0;
-            CountUnrecognized = 0;
+            Console.WriteLine("Start testing");
 
-            for (int i = 0; i < NumerOfExamples; i++)
+            for (int i = 0; i < NumberOfExamples; i++)
             {
+                //Console.WriteLine("Input number {0}", i + 1);
                 /* Add inputs to network and calculate outputs */
                 DigitNetwork.ResetAll();
-                DigitNetwork.SetInputValues(TestingData[i]);
+                DigitNetwork.SetInputValues(TestingData[i].ToArray<int>());
                 DigitNetwork.FeedResultsForward();
 
-                AverageError += DigitNetwork.GetResult() - ExpectedResults[i];
+                /*
+                Console.WriteLine("Network result: {0}; expected result: {1}", DigitNetwork.GetResult(), ExpectedResults[i]);
+                Console.WriteLine("Output neurons:");
+                foreach (Neuron n in DigitNetwork.OutputLayer.Neurons)
+                    Console.Write("{0} ", n.GetOutput());
+                Console.WriteLine();
+                */
                 if (DigitNetwork.GetResult() == ExpectedResults[i])
-                    CountRecognized++;
+                {
+                    CountCorrect++;
+                    //Console.WriteLine("Correct identification, Correct = {0}", CountCorrect);
+                }
                 else
-                    CountUnrecognized++;
+                {
+                    CountIncorrect++;
+                    //Console.WriteLine("Wrong identification, Wrong = {0}", CountIncorrect);
+                }
+
+                AverageError += DigitNetwork.GetResult() - ExpectedResults[i];
             }
-            AverageError /= NumerOfExamples;
+            AverageError /= NumberOfExamples;
+            Console.WriteLine("Average error: {0}", AverageError);
             return AverageError;
         }
 
+        /* READ IN TESTING DATA */
         public void ReadTestingData()
         {
-            StreamReader reader;
+            string path = Path.Combine(Directory.GetCurrentDirectory(), FileName);
 
-            try
+            using (StreamReader reader = new StreamReader(path))
             {
-                reader = File.OpenText(FileLocation);
                 string line;
-                string[] items;
-                int i = 0;
                 while ((line = reader.ReadLine()) != null)
-                {
-                    items = line.Split(',');
-                    for (int j = 0; j < DigitNetwork.InputSize; j++)
-                        testingData[i][j] = int.Parse(items[j]);
-                    expectedResults[i] = int.Parse(items[DigitNetwork.InputSize]);
-                    i++;
-                }
+                    ProcessInput(line);
+                Console.WriteLine("Finished reading in testing data, read in {0} lines", TestingData.Count);
                 reader.Close();
-                DataReadIn = true;
             }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.StackTrace);
-                DataReadIn = false;
-            }
+        }
+
+        public void ProcessInput(string line)
+        {
+            string[] items;
+
+            int i = TestingData.Count;
+            TestingData.Add(i, new List<int>(64));
+            items = line.Split(',');
+            for (int j = 0; j < 64; j++)
+                TestingData[i].Add(int.Parse(items[j]));
+            ExpectedResults.Add(int.Parse(items[64]));
+            //Console.WriteLine(line);
         }
     }
 }

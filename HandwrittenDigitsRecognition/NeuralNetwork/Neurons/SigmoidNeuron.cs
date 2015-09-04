@@ -24,9 +24,9 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork.Neurons
             return 1 / (Math.Exp(-Lambda * input) + 1);
         }
 
-        protected override double DerivativeOfActivationFunction(double weight)
+        protected override double DerivativeOfActivationFunction(double input)
         {
-            double fx = ActivationFunction(weight);
+            double fx = ActivationFunction(input);
             return Lambda * fx * (1 - fx);
         }
     }
