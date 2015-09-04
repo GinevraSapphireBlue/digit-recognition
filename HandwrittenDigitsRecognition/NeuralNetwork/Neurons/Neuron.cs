@@ -154,7 +154,8 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork.Neurons
 
         public void UpdateWeights(double learningCoef)
         {
-            foreach (Node input in Inputs.Keys)
+            List<Node> inputNodes = new List<Node>(Inputs.Keys);
+            foreach (Node input in inputNodes)
             {
                 Inputs[input] += learningCoef * ErrorCoef * input.GetOutput();
             }

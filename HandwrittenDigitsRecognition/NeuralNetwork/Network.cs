@@ -90,11 +90,11 @@ namespace HandwrittenDigitsRecognition.NeuralNetwork
             /* Calculate errors for output layer */
             ((SigmoidNeuronLayer)Layers[LayerCount]).CalculateAllErrors(expectedValues);
             /* Calculate errors for hidden layers */
-            for (int i = LayerCount - 1; i >= 0; i--)
+            for (int i = LayerCount - 1; i > 0; i--)
                 ((SigmoidNeuronLayer)Layers[i]).CalculateAllErrors();
 
             /* Update new weights for all layers, from last to first */
-            for (int i = LayerCount; i >= 0; i--)
+            for (int i = LayerCount; i > 0; i--)
             {
                 ((SigmoidNeuronLayer)Layers[i]).UpdateAllWeights(learningCoef);
             }
